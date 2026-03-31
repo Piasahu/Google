@@ -1,0 +1,1844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UNID x Google.org | AI Workforce Accelerator Prototype</title>
+    <style>
+      :root {
+        --bg: #f4eee2;
+        --bg-strong: #fffaf2;
+        --panel: rgba(255, 255, 255, 0.9);
+        --panel-strong: rgba(255, 255, 255, 0.96);
+        --text: #16313b;
+        --muted: #59707b;
+        --line: rgba(22, 49, 59, 0.12);
+        --navy: #103846;
+        --teal: #12817b;
+        --sage: #5f8e72;
+        --gold: #d69a39;
+        --coral: #c95d46;
+        --sky: #d9eef0;
+        --sand: #f1e5c7;
+        --shadow: 0 24px 60px rgba(17, 46, 56, 0.12);
+        --radius: 26px;
+        --radius-sm: 18px;
+        --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        --sans: "Aptos", "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(214, 154, 57, 0.18), transparent 28%),
+          radial-gradient(circle at 82% 14%, rgba(18, 129, 123, 0.18), transparent 24%),
+          linear-gradient(180deg, #fbf7ef 0%, #f3ecdf 50%, #ece2d0 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(16, 56, 70, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(16, 56, 70, 0.025) 1px, transparent 1px);
+        background-size: 34px 34px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 88%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      select {
+        font: inherit;
+      }
+
+      .page {
+        width: min(1360px, calc(100vw - 28px));
+        margin: 18px auto 56px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+        gap: 20px;
+        padding: 28px;
+        border-radius: 34px;
+        background:
+          linear-gradient(140deg, rgba(16, 56, 70, 0.98), rgba(25, 95, 100, 0.94)),
+          radial-gradient(circle at 86% 22%, rgba(214, 154, 57, 0.22), transparent 28%);
+        color: #f6fbfb;
+        box-shadow: 0 28px 80px rgba(15, 41, 50, 0.24);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -10% -34% 38%;
+        height: 320px;
+        background: radial-gradient(circle, rgba(214, 154, 57, 0.24), transparent 62%);
+        pointer-events: none;
+      }
+
+      .hero-copy,
+      .hero-side {
+        position: relative;
+        z-index: 1;
+      }
+
+      .topline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 13px;
+        border-radius: 999px;
+        background: rgba(246, 251, 251, 0.1);
+        border: 1px solid rgba(246, 251, 251, 0.14);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        margin: 0 0 14px;
+        max-width: 14ch;
+        font-family: var(--serif);
+        font-size: clamp(2.8rem, 6vw, 5rem);
+        line-height: 0.96;
+        letter-spacing: -0.05em;
+      }
+
+      .hero .lede {
+        max-width: 68ch;
+        margin: 0 0 18px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: rgba(246, 251, 251, 0.86);
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .button,
+      .ghost-button,
+      .mini-button,
+      .state-chip,
+      .mode-button,
+      .copy-button {
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease, color 140ms ease;
+      }
+
+      .button:hover,
+      .ghost-button:hover,
+      .mini-button:hover,
+      .state-chip:hover,
+      .mode-button:hover,
+      .copy-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 18px;
+        background: linear-gradient(135deg, var(--gold), #efbd65);
+        color: #11262e;
+        text-decoration: none;
+        font-weight: 800;
+        box-shadow: 0 14px 30px rgba(214, 154, 57, 0.24);
+      }
+
+      .ghost-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 18px;
+        background: rgba(246, 251, 251, 0.08);
+        border: 1px solid rgba(246, 251, 251, 0.16);
+        color: #f6fbfb;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .hero-facts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .fact-card {
+        min-height: 118px;
+        padding: 16px;
+        border-radius: 20px;
+        background: rgba(246, 251, 251, 0.08);
+        border: 1px solid rgba(246, 251, 251, 0.14);
+        backdrop-filter: blur(10px);
+      }
+
+      .fact-label {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(246, 251, 251, 0.68);
+      }
+
+      .fact-value {
+        margin: 8px 0 6px;
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .fact-sub {
+        font-size: 13px;
+        line-height: 1.5;
+        color: rgba(246, 251, 251, 0.8);
+      }
+
+      .hero-side {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grant-panel,
+      .note-panel {
+        padding: 20px;
+        border-radius: 24px;
+        background: rgba(246, 251, 251, 0.1);
+        border: 1px solid rgba(246, 251, 251, 0.14);
+      }
+
+      .grant-panel h2,
+      .note-panel h2 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+      }
+
+      .fit-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+      }
+
+      .fit-list li {
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        line-height: 1.5;
+      }
+
+      .grant-panel strong,
+      .note-panel strong {
+        color: #ffe9b7;
+      }
+
+      .subnav {
+        position: sticky;
+        top: 12px;
+        z-index: 20;
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.74);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(16, 56, 70, 0.08);
+        box-shadow: var(--shadow);
+      }
+
+      .subnav a {
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #edf2f3;
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .section {
+        margin-top: 22px;
+        padding: 26px;
+        border-radius: 30px;
+        background: var(--panel);
+        border: 1px solid rgba(16, 56, 70, 0.07);
+        box-shadow: var(--shadow);
+      }
+
+      .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-family: var(--serif);
+        font-size: clamp(1.8rem, 3vw, 2.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      .section-copy {
+        max-width: 68ch;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .card-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .three-up {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .two-up {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .info-card,
+      .metric-panel,
+      .story-card,
+      .mini-card,
+      .architecture-card,
+      .copy-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: var(--panel-strong);
+        border: 1px solid var(--line);
+      }
+
+      .info-card h3,
+      .metric-panel h3,
+      .story-card h3,
+      .mini-card h3,
+      .architecture-card h3,
+      .copy-card h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .info-card p,
+      .metric-panel p,
+      .story-card p,
+      .mini-card p,
+      .architecture-card p,
+      .copy-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.62;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #eef4f2;
+        color: var(--navy);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .prototype-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .control-panel {
+        position: sticky;
+        top: 94px;
+        align-self: start;
+        display: grid;
+        gap: 14px;
+        padding: 20px;
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(16, 56, 70, 0.96), rgba(20, 89, 92, 0.93)),
+          linear-gradient(180deg, rgba(214, 154, 57, 0.12), transparent);
+        color: #f7fbfb;
+      }
+
+      .control-panel h3 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .control-panel p {
+        margin: 0;
+        color: rgba(247, 251, 251, 0.76);
+        line-height: 1.58;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(247, 251, 251, 0.72);
+      }
+
+      .field select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(247, 251, 251, 0.16);
+        background: rgba(247, 251, 251, 0.12);
+        color: #f7fbfb;
+        appearance: none;
+      }
+
+      .field select option {
+        color: var(--text);
+      }
+
+      .control-panel .button {
+        width: 100%;
+      }
+
+      .panel-note {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(247, 251, 251, 0.08);
+        border: 1px solid rgba(247, 251, 251, 0.12);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .result-panel {
+        display: grid;
+        gap: 16px;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .metric-panel {
+        min-height: 120px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.92)),
+          linear-gradient(180deg, rgba(18, 129, 123, 0.08), transparent);
+      }
+
+      .metric-kicker {
+        font-size: 11px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .metric-number {
+        margin: 10px 0 8px;
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .story-board {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 16px;
+      }
+
+      .story-card {
+        background: var(--bg-strong);
+      }
+
+      .story-card .chat-line {
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 18px;
+        background: #eff7f6;
+        border: 1px solid rgba(18, 129, 123, 0.12);
+      }
+
+      .story-card .chat-line strong {
+        display: inline-block;
+        margin-bottom: 6px;
+        color: var(--navy);
+      }
+
+      .signal-box {
+        margin-top: 14px;
+        padding: 14px;
+        border-radius: 18px;
+        background: #fff5df;
+        border: 1px solid rgba(214, 154, 57, 0.22);
+      }
+
+      .signal-box strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #8a5d12;
+      }
+
+      .pathway-list,
+      .module-list,
+      .bullet-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .pathway-item,
+      .module-item,
+      .bullet-item {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: #f4f8f8;
+        border: 1px solid rgba(16, 56, 70, 0.09);
+      }
+
+      .pathway-item strong,
+      .module-item strong,
+      .bullet-item strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .pathway-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .arch-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .mode-button,
+      .state-chip,
+      .copy-button,
+      .mini-button {
+        padding: 10px 14px;
+        background: #edf2f3;
+        color: var(--navy);
+        font-weight: 700;
+      }
+
+      .mode-button.active,
+      .state-chip.active {
+        background: linear-gradient(135deg, var(--navy), #1b5765);
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(16, 56, 70, 0.16);
+      }
+
+      .architecture-stage {
+        display: none;
+        margin-top: 18px;
+      }
+
+      .architecture-stage.active {
+        display: block;
+      }
+
+      .pilot-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .flow-core {
+        grid-column: span 2;
+        position: relative;
+        padding: 20px;
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(16, 56, 70, 0.98), rgba(18, 129, 123, 0.92)),
+          radial-gradient(circle at 70% 20%, rgba(214, 154, 57, 0.18), transparent 26%);
+        color: #f7fbfb;
+        min-height: 220px;
+      }
+
+      .flow-core h3 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .flow-core p {
+        margin: 0;
+        color: rgba(247, 251, 251, 0.8);
+        line-height: 1.6;
+      }
+
+      .flow-orbit {
+        display: grid;
+        gap: 14px;
+      }
+
+      .architecture-card {
+        min-height: 140px;
+      }
+
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .agent-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: var(--bg-strong);
+        border: 1px solid var(--line);
+        min-height: 228px;
+      }
+
+      .agent-card .agent-kicker {
+        font-size: 11px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .agent-card h3 {
+        margin: 10px 0 8px;
+      }
+
+      .agent-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.58;
+      }
+
+      .contract-ribbon {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #eef6f5, #fbf6ea);
+        border: 1px solid rgba(18, 129, 123, 0.16);
+      }
+
+      .contract-ribbon strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .intelligence-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: 16px;
+      }
+
+      .state-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .bar-stack {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .bar-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .bar-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 14px;
+      }
+
+      .bar-track {
+        height: 12px;
+        border-radius: 999px;
+        background: #e8efef;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(135deg, var(--teal), #5cc0b4);
+      }
+
+      .mini-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .mini-card .value {
+        margin: 8px 0 6px;
+        font-size: 1.7rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .insight-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .insight-card {
+        padding: 16px;
+        border-radius: 18px;
+        background: #f6f9f9;
+        border: 1px solid rgba(16, 56, 70, 0.08);
+      }
+
+      .insight-card h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .insight-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .roadmap {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .phase-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #fffefb, #f7f2e6);
+        border: 1px solid rgba(16, 56, 70, 0.08);
+      }
+
+      .phase-card .phase {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--coral);
+        font-weight: 800;
+      }
+
+      .phase-card h3 {
+        margin: 10px 0 8px;
+      }
+
+      .phase-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .footer {
+        margin-top: 22px;
+        padding: 24px 26px 30px;
+        border-radius: 28px;
+        background: rgba(16, 56, 70, 0.96);
+        color: rgba(246, 251, 251, 0.88);
+      }
+
+      .footer h2 {
+        margin: 0 0 10px;
+        font-size: 1.15rem;
+      }
+
+      .footer p {
+        margin: 0 0 14px;
+        line-height: 1.65;
+      }
+
+      .applicant-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .applicant-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(246, 251, 251, 0.08);
+        border: 1px solid rgba(246, 251, 251, 0.14);
+      }
+
+      .applicant-card h3 {
+        margin: 0 0 10px;
+        color: #ffe9b7;
+        font-size: 1rem;
+      }
+
+      .applicant-card p {
+        margin: 0;
+        color: rgba(246, 251, 251, 0.86);
+      }
+
+      .applicant-card a {
+        color: #ffe9b7;
+      }
+
+      @media (max-width: 1180px) {
+        .hero,
+        .prototype-grid,
+        .story-board,
+        .intelligence-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-facts,
+        .metric-row,
+        .roadmap,
+        .three-up,
+        .two-up,
+        .agent-grid,
+        .pilot-flow,
+        .pathway-columns,
+        .applicant-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .control-panel {
+          position: static;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          width: min(100vw - 18px, 100%);
+          margin: 10px auto 28px;
+        }
+
+        .hero,
+        .section,
+        .footer {
+          padding: 18px;
+          border-radius: 22px;
+        }
+
+        .hero h1 {
+          max-width: none;
+        }
+
+        .hero-facts,
+        .metric-row,
+        .roadmap,
+        .three-up,
+        .two-up,
+        .agent-grid,
+        .pilot-flow,
+        .pathway-columns,
+        .mini-metrics,
+        .insight-grid,
+        .applicant-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .subnav {
+          position: static;
+        }
+
+        .section-head {
+          align-items: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-copy">
+          <h1>AI Workforce Accelerator for public service in Mexico</h1>
+          <p class="lede">
+            An AI initiative from UNID and Talisis designed to help state governments move from generic
+            workforce training to AI-powered skills diagnosis, personalized pathways, adaptive
+            tutoring, verified microcredentials, and policy intelligence. The pilot is scoped as a
+            functional single-LLM system today and a modular five-agent platform tomorrow.
+          </p>
+          <div class="action-row">
+            <a class="button" href="#demo">Open live prototype</a>
+          </div>
+          <div class="hero-facts">
+            <article class="fact-card">
+              <div class="fact-label">UNID footprint</div>
+              <div class="fact-value">23 states</div>
+              <div class="fact-sub">Official UNID presence across Mexico, anchored in employability and applied learning.</div>
+            </article>
+            <article class="fact-card">
+              <div class="fact-label">Talent network</div>
+              <div class="fact-value">185K+</div>
+              <div class="fact-sub">UNID graduates plus 4,200+ employer agreements that can shape live labor demand signals.</div>
+            </article>
+            <article class="fact-card">
+              <div class="fact-label">Learning supply</div>
+              <div class="fact-value">21K+</div>
+              <div class="fact-sub">Talisis digital courses across its broader platform, useful for rapid pathway assembly.</div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="hero-side">
+          <section class="grant-panel">
+            <ul class="fit-list">
+              <li><strong>Public service workflow:</strong> intake, training assignment, tutoring, credentialing, and employability tracking.</li>
+              <li><strong>Government alignment:</strong> active partnership discussions for a Quintana Roo pilot and a design built for labor secretariats.</li>
+              <li><strong>AI ambition:</strong> generative AI in the pilot, agentic AI in the scale architecture, with responsible governance built in.</li>
+              <li><strong>Replicability:</strong> the same operating model can extend across tourism, nearshoring, logistics, and youth employment use cases.</li>
+            </ul>
+          </section>
+
+          <section class="note-panel">
+            <h2>Prototype scope in this app</h2>
+            <p>
+              You can demo a citizen journey, inspect the future multi-agent architecture, review a
+              state policy dashboard, and review the proposed rollout for state deployment.
+            </p>
+          </section>
+        </aside>
+      </header>
+
+      <nav class="subnav">
+        <a href="#opportunity">Opportunity</a>
+        <a href="#demo">Citizen demo</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#intelligence">Policy dashboard</a>
+        <a href="#roadmap">Roadmap</a>
+      </nav>
+
+      <section class="section" id="opportunity">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Public challenge</p>
+            <h2>Turn workforce development into an intelligent public service</h2>
+          </div>
+          <p class="section-copy">
+            The strongest story for Google.org is not simply “education with AI.” It is a government
+            innovation platform that uses AI to improve how citizens are assessed, guided, trained, and
+            connected to real economic opportunity.
+          </p>
+        </div>
+
+        <div class="card-grid three-up">
+          <article class="info-card">
+            <h3>What is broken today</h3>
+            <p>
+              Public training programs often operate with static catalogs, manual intake, and weak
+              feedback loops from employers. Citizens are treated as cohorts, not individuals, so skills
+              gaps remain hidden and outcomes are hard to verify.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Nearshoring mismatch</span>
+              <span class="tag">Tourism growth pressure</span>
+              <span class="tag">Low personalization</span>
+            </div>
+          </article>
+
+          <article class="info-card">
+            <h3>What this pilot changes</h3>
+            <p>
+              A single conversational system diagnoses learner readiness, recommends a pathway, supports
+              tutoring, captures evidence of progress, and returns anonymized workforce signals to
+              government decision makers in one continuous loop.
+            </p>
+            <div class="tag-row">
+              <span class="tag">LLM-guided intake</span>
+              <span class="tag">Adaptive tutoring</span>
+              <span class="tag">Policy intelligence</span>
+            </div>
+          </article>
+
+          <article class="info-card">
+            <h3>Why UNID and Talisis are credible builders</h3>
+            <p>
+              UNID already anchors employability through practical learning and employer agreements,
+              while Talisis adds broad digital distribution, course supply, and platform infrastructure.
+            </p>
+            <div class="tag-row">
+              <span class="tag">185K+ graduates</span>
+              <span class="tag">4,200+ convenios</span>
+              <span class="tag">110+ cities across Talisis</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="demo">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Live prototype</p>
+            <h2>Simulate the citizen journey</h2>
+          </div>
+          <p class="section-copy">
+            Use the controls to run an illustrative pilot scenario. The prototype outputs a skills
+            diagnosis, a personalized pathway, embedded AI education modules, and a policy signal that
+            would roll up to a labor secretariat dashboard.
+          </p>
+        </div>
+
+        <div class="prototype-grid">
+          <form class="control-panel" id="scenarioForm">
+            <h3>Pilot scenario builder</h3>
+            <p>Choose a state, learner profile, and target outcome. The demo will update in place.</p>
+
+            <div class="field">
+              <label for="stateSelect">State partner</label>
+              <select id="stateSelect" name="state">
+                <option value="Quintana Roo">Quintana Roo</option>
+                <option value="Nuevo Leon">Nuevo Leon</option>
+                <option value="Jalisco">Jalisco</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="personaSelect">Citizen profile</label>
+              <select id="personaSelect" name="persona">
+                <option value="Young job seeker">Young job seeker</option>
+                <option value="Frontline worker">Frontline worker</option>
+                <option value="Career transition adult">Career transition adult</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="educationSelect">Education level</label>
+              <select id="educationSelect" name="education">
+                <option value="Upper secondary">Upper secondary</option>
+                <option value="Technical diploma">Technical diploma</option>
+                <option value="University incomplete">University incomplete</option>
+                <option value="University graduate">University graduate</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="englishSelect">English readiness</label>
+              <select id="englishSelect" name="english">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="digitalSelect">Digital readiness</label>
+              <select id="digitalSelect" name="digital">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="goalSelect">Career target</label>
+              <select id="goalSelect" name="goal">
+                <option value="Tourism operations">Tourism operations</option>
+                <option value="Nearshoring operations">Nearshoring operations</option>
+                <option value="Customer success">Customer success</option>
+                <option value="Entrepreneurship">Entrepreneurship</option>
+              </select>
+            </div>
+
+            <button class="button" type="submit">Run AI diagnosis</button>
+
+            <div class="panel-note">
+              Prototype metrics below are illustrative workflow outputs for validation only. Real
+              deployment would connect to live labor secretariat, employer, and learning-platform data.
+            </div>
+          </form>
+
+          <div class="result-panel">
+            <div class="metric-row">
+              <article class="metric-panel">
+                <div class="metric-kicker">Employability readiness</div>
+                <div class="metric-number" id="readinessMetric">74</div>
+                <p id="readinessCopy">Composite score after skills diagnosis and pathway fit assessment.</p>
+              </article>
+              <article class="metric-panel">
+                <div class="metric-kicker">Projected completion</div>
+                <div class="metric-number" id="completionMetric">81%</div>
+                <p id="completionCopy">Expected likelihood of finishing the first guided pathway.</p>
+              </article>
+              <article class="metric-panel">
+                <div class="metric-kicker">Verified signal</div>
+                <div class="metric-number" id="signalMetric">3</div>
+                <p id="signalCopy">Microcredentials or milestones government can count with confidence.</p>
+              </article>
+              <article class="metric-panel">
+                <div class="metric-kicker">Policy feedback</div>
+                <div class="metric-number" id="policyMetric">Live</div>
+                <p id="policyCopy">Anonymized demand and progression data rolls back into workforce dashboards.</p>
+              </article>
+            </div>
+
+            <div class="story-board">
+              <article class="story-card">
+                <h3 id="profileHeadline">Quintana Roo pilot: bilingual tourism pathway</h3>
+                <p id="profileSummary">
+                  The pilot detects strong service potential but uneven English confidence and digital
+                  fluency. It recommends a short bridge pathway tied to hotel, airport, and customer
+                  experience roles where rapid placement is realistic.
+                </p>
+
+                <div class="chat-line">
+                  <strong>AI skills diagnosis</strong>
+                  <span id="diagnosisText">
+                    Your profile suggests good employability upside if we close two immediate gaps:
+                    role-specific English and digital workflow confidence. The system will start with a
+                    short diagnostic pathway and then branch into supervised job-readiness support.
+                  </span>
+                </div>
+
+                <div class="signal-box">
+                  <strong>What government learns</strong>
+                  <span id="governmentSignal">
+                    Demand is clustering around bilingual frontline roles, so short bridge modules may
+                    outperform longer generic training in the first Quintana Roo pilot cohort.
+                  </span>
+                </div>
+              </article>
+
+              <article class="story-card">
+                <h3>Immediate skill gaps</h3>
+                <div class="bullet-list" id="gapList"></div>
+              </article>
+            </div>
+
+            <div class="pathway-columns">
+              <article class="story-card">
+                <h3>Personalized learning pathway</h3>
+                <p>
+                  These are prototype modules that show how Talisis supply, UNID validation, and AI
+                  guidance can work together. In production, each item would map to a real catalog entry
+                  and an evidence trail.
+                </p>
+                <div class="pathway-list" id="pathwayList"></div>
+              </article>
+
+              <article class="story-card">
+                <h3>AI education embedded in the experience</h3>
+                <p>
+                  The app does not just use AI behind the scenes. It also builds AI literacy for
+                  citizens, public servants, and employers so the pilot demonstrates innovation and
+                  responsible adoption at the same time.
+                </p>
+                <div class="module-list" id="moduleList"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="architecture">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Technical design</p>
+            <h2>From validated pilot to five-agent public-service stack</h2>
+          </div>
+          <div class="arch-header">
+            <button class="mode-button active" data-mode="pilot" type="button">Pilot architecture</button>
+            <button class="mode-button" data-mode="scale" type="button">Scale architecture</button>
+          </div>
+        </div>
+
+        <p class="section-copy">
+          The pilot can stay simple enough to launch quickly, while still being intentionally modular.
+        </p>
+
+        <div class="architecture-stage active" id="mode-pilot">
+          <div class="pilot-flow">
+            <div class="flow-core">
+              <h3>Single-LLM orchestration pilot</h3>
+              <p>
+                Our AI stack handles intake, diagnosis, pathway recommendation, and adaptive tutoring
+                inside one conversational flow. State rules, learner profiles, course metadata, and
+                employer signals are retrieved from a structured data layer so the pilot remains
+                auditable and production-minded.
+              </p>
+              <div class="tag-row">
+                <span class="tag">AI stack - Google &amp; OpenAI</span>
+                <span class="tag">PostgreSQL + pgvector</span>
+                <span class="tag">LangSmith traces</span>
+                <span class="tag">Google Cloud Mexico</span>
+              </div>
+            </div>
+
+            <div class="flow-orbit">
+              <article class="architecture-card">
+                <h3>Citizen intake</h3>
+                <p>Conversational registration, skills capture, consent, and baseline risk detection.</p>
+              </article>
+              <article class="architecture-card">
+                <h3>Pathway assignment</h3>
+                <p>Talisis learning assets, UNID pathway logic, and employability milestones are selected in one pass.</p>
+              </article>
+            </div>
+
+            <div class="flow-orbit">
+              <article class="architecture-card">
+                <h3>Tutoring and nudges</h3>
+                <p>Adaptive support keeps learners moving and flags when a human coach should step in.</p>
+              </article>
+              <article class="architecture-card">
+                <h3>Policy intelligence</h3>
+                <p>Anonymized progression and demand signals return to a government dashboard for course and budget decisions.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="architecture-stage" id="mode-scale">
+          <div class="agent-grid">
+            <article class="agent-card">
+              <div class="agent-kicker">Agent 01</div>
+              <h3>Skills Diagnostic</h3>
+              <p>
+                Builds a structured profile from citizen conversation, prior learning, and self-reported
+                experience; outputs a normalized skills vector and confidence score.
+              </p>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-kicker">Agent 02</div>
+              <h3>Career Path</h3>
+              <p>
+                Matches citizen capability and local employer demand to role clusters, wage trajectories,
+                and placement probability in the target state economy.
+              </p>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-kicker">Agent 03</div>
+              <h3>Learning Path</h3>
+              <p>
+                Converts the target role into a modular training sequence across Talisis and UNID assets,
+                with prerequisites, pacing, and verification logic.
+              </p>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-kicker">Agent 04</div>
+              <h3>AI Tutor</h3>
+              <p>
+                Delivers coaching, practice, reminders, and short-form explanation while escalating
+                sensitive cases or confidence failures to human review.
+              </p>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-kicker">Agent 05</div>
+              <h3>Policy Intelligence</h3>
+              <p>
+                Aggregates anonymized demand, completion, and credential signals to help state
+                governments improve budget allocation and workforce strategy.
+              </p>
+            </article>
+          </div>
+
+          <div class="contract-ribbon">
+            <strong>Structured data contracts make the system grant-ready and scalable.</strong>
+            Each agent can publish a typed output such as learner profile, recommended role cluster,
+            pathway plan, tutoring event, or policy insight. That gives Talisis AI Lab and the technical
+            team a clean path toward multi-agent deployment without rewriting the full experience.
+          </div>
+        </div>
+
+        <div class="card-grid two-up" style="margin-top: 16px;">
+          <article class="info-card">
+            <h3>Responsible AI controls</h3>
+            <p>
+              Human-in-the-loop escalation, consent-aware data collection, audit trails, prompt and
+              output logging, quality monitoring through LangSmith, and policy dashboards built only from
+              anonymized aggregates.
+            </p>
+          </article>
+
+          <article class="info-card">
+            <h3>Deployment posture</h3>
+            <p>
+              A pragmatic pilot on Google Cloud in Mexico can validate data residency, monitoring,
+              integration points, and government adoption before heavier agent orchestration is turned on.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="intelligence">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Government dashboard</p>
+            <h2>Show how policy intelligence reaches the state level</h2>
+          </div>
+          <p class="section-copy">
+            This section intentionally uses illustrative numbers. The value is the workflow: citizens
+            generate evidence, pathways generate verified progress, and governments finally see where
+            training investment is actually converting into employability.
+          </p>
+        </div>
+
+        <div class="intelligence-layout">
+          <article class="story-card">
+            <h3>State partner simulation</h3>
+            <div class="state-selector" id="stateButtons"></div>
+            <p id="stateNarrative">
+              Quintana Roo is a strong opening use case because tourism growth creates clear role
+              clusters, language demand, and seasonal workforce pressure that can benefit from faster,
+              more personalized training decisions.
+            </p>
+
+            <div class="mini-metrics">
+              <div class="mini-card">
+                <h3>Priority cohort</h3>
+                <div class="value" id="cohortValue">Bilingual frontline</div>
+                <p id="cohortCopy">Best near-term opportunity based on the simulated demand mix.</p>
+              </div>
+              <div class="mini-card">
+                <h3>Pilot adoption</h3>
+                <div class="value" id="adoptionValue">68%</div>
+                <p id="adoptionCopy">Illustrative share of referred citizens likely to accept a tailored pathway.</p>
+              </div>
+            </div>
+
+            <div class="bar-stack" id="signalBars"></div>
+          </article>
+
+          <article class="story-card">
+            <h3>What decision-makers can do with the data</h3>
+            <div class="insight-grid" id="insightGrid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="roadmap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Pilot roadmap</p>
+            <h2>A practical path from proposal to state deployment</h2>
+          </div>
+          <p class="section-copy">
+            The proposal is stronger when the first year reads like an adoption plan, not just a build
+            plan. These phases keep the system grounded in validation, responsible AI, and government
+            usability.
+          </p>
+        </div>
+
+        <div class="roadmap">
+          <article class="phase-card">
+            <div class="phase">Phase 1</div>
+            <h3>Prototype validation</h3>
+            <p>
+              Validate the functional architecture with Talisis AI Lab, confirm workflow design with the
+              technical team, and test user journeys for citizens, tutors, and government operators.
+            </p>
+          </article>
+
+          <article class="phase-card">
+            <div class="phase">Phase 2</div>
+            <h3>Quintana Roo pilot</h3>
+            <p>
+              Launch a government-aligned pilot focused on economic opportunity, beginning with high-fit
+              sectors such as tourism, bilingual service, or adjacent logistics roles.
+            </p>
+          </article>
+
+          <article class="phase-card">
+            <div class="phase">Phase 3</div>
+            <h3>Scale and replication</h3>
+            <p>
+              Introduce multi-agent specialization, replicate to additional states, and publish reusable
+              operating models, metrics, and governance patterns for wider public-sector adoption.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <h2>Grant Applicants</h2>
+        <div class="applicant-grid">
+          <article class="applicant-card">
+            <h3>Primary</h3>
+            <p><strong>Luis Guillermo Colin Villavicencio</strong></p>
+            <p>Director of Corporate, Public and Government Affairs - Talisis</p>
+            <p><a href="mailto:luis.colin@talisis.com">luis.colin@talisis.com</a></p>
+          </article>
+          <article class="applicant-card">
+            <h3>Secondary</h3>
+            <p><strong>Saswat Kumar</strong></p>
+            <p>Director of AI Lab - Talisis</p>
+            <p><a href="mailto:saswat.kumar@talisis.com">saswat.kumar@talisis.com</a></p>
+          </article>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const scenarioData = {
+        "Quintana Roo": {
+          narrative:
+            "Quintana Roo is a strong opening use case because tourism growth creates clear role clusters, language demand, and seasonal workforce pressure that can benefit from faster, more personalized training decisions.",
+          focus: "Bilingual frontline",
+          adoption: "68%",
+          signals: [
+            { label: "Tourism and service demand", value: 88 },
+            { label: "English bridge need", value: 79 },
+            { label: "Digital workflow upskilling", value: 66 },
+            { label: "Employer partnership readiness", value: 72 }
+          ],
+          insights: [
+            {
+              title: "Budget steering",
+              body: "Shift initial spend toward short bridge programs that combine English, customer recovery, and digital workflow basics instead of long generic training blocks."
+            },
+            {
+              title: "Citizen targeting",
+              body: "Prioritize first-time workers and returning adults whose employment barriers can be reduced quickly through guided pathways and wraparound nudges."
+            },
+            {
+              title: "Employer alignment",
+              body: "Use convenios to validate role clusters in hospitality, airport services, and customer operations before expanding to adjacent logistics pathways."
+            },
+            {
+              title: "AI education layer",
+              body: "Embed practical AI fluency in tourism pathways so workers learn both job skills and safe use of everyday AI tools in service environments."
+            }
+          ]
+        },
+        "Nuevo Leon": {
+          narrative:
+            "Nuevo Leon is a strong replication candidate for nearshoring and industrial operations, where the public value comes from faster matching between technical training, employer demand, and upward mobility pathways.",
+          focus: "Industrial entry roles",
+          adoption: "73%",
+          signals: [
+            { label: "Nearshoring operations demand", value: 91 },
+            { label: "Supervisor pipeline need", value: 74 },
+            { label: "Spreadsheet and systems fluency", value: 82 },
+            { label: "Employer data-sharing readiness", value: 78 }
+          ],
+          insights: [
+            {
+              title: "Budget steering",
+              body: "Prioritize short operational pathways with clear wage ladders, especially in quality, warehousing, and industrial support roles."
+            },
+            {
+              title: "Citizen targeting",
+              body: "Target young adults and reskilling workers who already have baseline digital exposure but need structured pathways into better-paying formal work."
+            },
+            {
+              title: "Employer alignment",
+              body: "Use employer partnerships to refresh role taxonomies quarterly so training stays aligned with changing production requirements."
+            },
+            {
+              title: "AI education layer",
+              body: "Train workers and public servants in safe use of AI copilots for documentation, troubleshooting, and task planning in operational settings."
+            }
+          ]
+        },
+        Jalisco: {
+          narrative:
+            "Jalisco supports a broader innovation and services story, combining digital roles, customer operations, and entrepreneurship in a way that can prove the platform works beyond one sector.",
+          focus: "Digital service roles",
+          adoption: "71%",
+          signals: [
+            { label: "Customer success demand", value: 85 },
+            { label: "SME digital adoption", value: 76 },
+            { label: "AI literacy opportunity", value: 83 },
+            { label: "Replication potential", value: 81 }
+          ],
+          insights: [
+            {
+              title: "Budget steering",
+              body: "Blend employability pathways with entrepreneur support so the state can serve both job placement and productivity growth objectives."
+            },
+            {
+              title: "Citizen targeting",
+              body: "Prioritize learners with partial higher education or service experience who can move quickly into customer success and digital support roles."
+            },
+            {
+              title: "Employer alignment",
+              body: "Use feedback loops from tech-enabled service firms to refine pathway quality and flag which skills actually predict placement."
+            },
+            {
+              title: "AI education layer",
+              body: "Position AI fluency as a cross-cutting civic skill, not only a specialist track, so government can show broad ecosystem impact."
+            }
+          ]
+        }
+      };
+
+      const goalData = {
+        "Tourism operations": {
+          headline: "tourism pathway",
+          gaps: [
+            "Guest communication confidence",
+            "Service recovery decision-making",
+            "Digital reservation workflow fluency"
+          ],
+          pathway: [
+            {
+              title: "Bridge module: Service English and confidence",
+              body: "Short, practical language training with role-play, live practice, and progress nudges."
+            },
+            {
+              title: "Work module: Frontline digital workflows",
+              body: "Reservations, ticketing, CRM basics, and issue escalation in a guided environment."
+            },
+            {
+              title: "Verification: Customer experience microcredential",
+              body: "Evidence of completion plus a supervised practice task that can be shared with employers."
+            }
+          ],
+          govSignal:
+            "Demand is clustering around bilingual frontline roles, so short bridge modules may outperform longer generic training in the first pilot cohort."
+        },
+        "Nearshoring operations": {
+          headline: "nearshoring pathway",
+          gaps: [
+            "Spreadsheet and systems confidence",
+            "Operational English for instructions and safety",
+            "Quality and workflow discipline"
+          ],
+          pathway: [
+            {
+              title: "Bridge module: Applied digital operations",
+              body: "Hands-on practice with spreadsheets, production logs, and structured workflow tracking."
+            },
+            {
+              title: "Work module: Industrial readiness and safety",
+              body: "Operational discipline, documentation, and problem-solving for formal entry-level roles."
+            },
+            {
+              title: "Verification: Operations readiness microcredential",
+              body: "Employer-readable evidence of task completion and baseline operational fluency."
+            }
+          ],
+          govSignal:
+            "Short operational pathways tied to employer demand may create faster public value than broad vocational catalogs in nearshoring-heavy regions."
+        },
+        "Customer success": {
+          headline: "customer success pathway",
+          gaps: [
+            "Business communication structure",
+            "CRM and ticket-handling fluency",
+            "Data-backed customer follow-up"
+          ],
+          pathway: [
+            {
+              title: "Bridge module: Professional communication",
+              body: "Structured communication, escalation logic, and written clarity for customer-facing roles."
+            },
+            {
+              title: "Work module: CRM and service analytics",
+              body: "Ticket queues, retention logic, service metrics, and AI-assisted note drafting."
+            },
+            {
+              title: "Verification: Customer success microcredential",
+              body: "Progress evidence aligned to service quality and employer-facing competency statements."
+            }
+          ],
+          govSignal:
+            "Customer operations roles offer a strong replication path because the capability model can transfer across sectors and city economies."
+        },
+        Entrepreneurship: {
+          headline: "entrepreneurship pathway",
+          gaps: [
+            "Digital sales and marketing execution",
+            "Cash flow and pricing basics",
+            "Safe use of AI tools for small business productivity"
+          ],
+          pathway: [
+            {
+              title: "Bridge module: Market validation and digital presence",
+              body: "Practical help on targeting customers, building a simple digital presence, and testing offers."
+            },
+            {
+              title: "Work module: AI tools for SME productivity",
+              body: "Prompting, content drafting, customer follow-up, and planning with responsible AI habits."
+            },
+            {
+              title: "Verification: Business launch microcredential",
+              body: "A validated milestone tied to planning, sales readiness, and evidence of execution."
+            }
+          ],
+          govSignal:
+            "Entrepreneur pathways can widen the grant’s economy story by showing how AI improves both employability and small-business formation."
+        }
+      };
+
+      const personaData = {
+        "Young job seeker": {
+          summary:
+            "The pilot detects a citizen early in the labor market who benefits from structure, motivation, and close guidance on first-job readiness.",
+          tutor:
+            "The AI tutor should keep tasks short, confidence-building, and tied to visible milestones so the learner quickly understands what progress looks like."
+        },
+        "Frontline worker": {
+          summary:
+            "The pilot recognizes existing work discipline and customer exposure, but also spots uneven formal credentials and limited time for long training sequences.",
+          tutor:
+            "The AI tutor should prioritize practical upskilling, flexible scheduling, and language or digital reinforcement that transfers immediately to work."
+        },
+        "Career transition adult": {
+          summary:
+            "The pilot identifies a citizen with prior experience who needs faster translation of existing skills into a new role cluster rather than a full reset.",
+          tutor:
+            "The AI tutor should emphasize confidence recovery, transferable strengths, and clear wage-linked pathways that justify time investment."
+        }
+      };
+
+      const englishBoost = { Low: -7, Medium: 0, High: 6 };
+      const digitalBoost = { Low: -8, Medium: 0, High: 8 };
+      const educationBoost = {
+        "Upper secondary": 0,
+        "Technical diploma": 4,
+        "University incomplete": 5,
+        "University graduate": 8
+      };
+
+      const readinessMetric = document.getElementById("readinessMetric");
+      const completionMetric = document.getElementById("completionMetric");
+      const signalMetric = document.getElementById("signalMetric");
+      const policyMetric = document.getElementById("policyMetric");
+      const readinessCopy = document.getElementById("readinessCopy");
+      const completionCopy = document.getElementById("completionCopy");
+      const signalCopy = document.getElementById("signalCopy");
+      const policyCopy = document.getElementById("policyCopy");
+      const profileHeadline = document.getElementById("profileHeadline");
+      const profileSummary = document.getElementById("profileSummary");
+      const diagnosisText = document.getElementById("diagnosisText");
+      const governmentSignal = document.getElementById("governmentSignal");
+      const gapList = document.getElementById("gapList");
+      const pathwayList = document.getElementById("pathwayList");
+      const moduleList = document.getElementById("moduleList");
+      const stateNarrative = document.getElementById("stateNarrative");
+      const cohortValue = document.getElementById("cohortValue");
+      const adoptionValue = document.getElementById("adoptionValue");
+      const adoptionCopy = document.getElementById("adoptionCopy");
+      const signalBars = document.getElementById("signalBars");
+      const insightGrid = document.getElementById("insightGrid");
+      const stateButtons = document.getElementById("stateButtons");
+
+      let activeState = "Quintana Roo";
+
+      function createBarRow(signal) {
+        return `
+          <div class="bar-row">
+            <div class="bar-top">
+              <span>${signal.label}</span>
+              <strong>${signal.value}</strong>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: ${signal.value}%;"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      function createInsightCard(item) {
+        return `
+          <article class="insight-card">
+            <h3>${item.title}</h3>
+            <p>${item.body}</p>
+          </article>
+        `;
+      }
+
+      function renderStatePanel(state) {
+        const data = scenarioData[state];
+        activeState = state;
+        stateNarrative.textContent = data.narrative;
+        cohortValue.textContent = data.focus;
+        adoptionValue.textContent = data.adoption;
+        adoptionCopy.textContent = `Illustrative share of referred citizens likely to accept a tailored pathway in the ${state} scenario.`;
+        signalBars.innerHTML = data.signals.map(createBarRow).join("");
+        insightGrid.innerHTML = data.insights.map(createInsightCard).join("");
+
+        [...stateButtons.querySelectorAll("button")].forEach((button) => {
+          button.classList.toggle("active", button.dataset.state === state);
+        });
+      }
+
+      function renderScenario(event) {
+        if (event) {
+          event.preventDefault();
+        }
+
+        const form = document.getElementById("scenarioForm");
+        const formData = new FormData(form);
+        const state = formData.get("state");
+        const persona = formData.get("persona");
+        const education = formData.get("education");
+        const english = formData.get("english");
+        const digital = formData.get("digital");
+        const goal = formData.get("goal");
+
+        const stateInfo = scenarioData[state];
+        const goalInfo = goalData[goal];
+        const personaInfo = personaData[persona];
+
+        const readiness = Math.max(52, Math.min(92, 72 + englishBoost[english] + digitalBoost[digital] + educationBoost[education]));
+        const completion = Math.max(61, Math.min(93, readiness + (persona === "Young job seeker" ? 5 : 2) - (digital === "Low" ? 4 : 0)));
+        const verifiedSignals = goal === "Entrepreneurship" ? 2 : 3;
+        const aiModuleIntro =
+          digital === "Low"
+            ? "Foundations module: practical AI and digital confidence"
+            : digital === "Medium"
+              ? "Applied module: using AI tools safely for work"
+              : "Advanced module: workflow automation and prompt refinement";
+
+        readinessMetric.textContent = String(readiness);
+        completionMetric.textContent = `${completion}%`;
+        signalMetric.textContent = String(verifiedSignals);
+        policyMetric.textContent = state === "Quintana Roo" ? "Tourism" : state === "Nuevo Leon" ? "Industry" : "Services";
+
+        readinessCopy.textContent = `${english} English and ${digital.toLowerCase()} digital readiness feed the citizen-level diagnostic score.`;
+        completionCopy.textContent = `${persona} profiles in this ${state} scenario are projected to complete the first pathway at a higher rate with AI tutoring.`;
+        signalCopy.textContent = `${verifiedSignals} verified milestones flow back to government once the first pathway is completed.`;
+        policyCopy.textContent = `This simulated ${state} pilot publishes anonymized demand and progression insight to the economy dashboard.`;
+
+        profileHeadline.textContent = `${state} pilot: ${goalInfo.headline}`;
+        profileSummary.textContent = `${personaInfo.summary} ${goal === "Entrepreneurship" ? "The system therefore builds toward income generation and small-business productivity instead of only formal placement." : "The pathway is designed to connect quickly to realistic role clusters in the local economy."}`;
+        diagnosisText.textContent = `Based on ${education.toLowerCase()} education, ${english.toLowerCase()} English readiness, and ${digital.toLowerCase()} digital readiness, the model identifies ${goalInfo.gaps[0].toLowerCase()} and ${goalInfo.gaps[1].toLowerCase()} as the first barriers to close. ${personaInfo.tutor}`;
+        governmentSignal.textContent = goalInfo.govSignal;
+
+        gapList.innerHTML = goalInfo.gaps
+          .map((gap, index) => {
+            const strength =
+              index === 0 ? "Immediate intervention" : index === 1 ? "Pathway design priority" : "Tutor reinforcement";
+            return `
+              <div class="bullet-item">
+                <strong>${gap}</strong>
+                <span>${strength} for the ${state} pilot and a clear candidate for targeted public support.</span>
+              </div>
+            `;
+          })
+          .join("");
+
+        pathwayList.innerHTML = goalInfo.pathway
+          .map((step, index) => {
+            const stage = index === 0 ? "Weeks 1-2" : index === 1 ? "Weeks 3-6" : "Weeks 7-8";
+            return `
+              <div class="pathway-item">
+                <strong>${stage}: ${step.title}</strong>
+                <span>${step.body}</span>
+              </div>
+            `;
+          })
+          .join("");
+
+        moduleList.innerHTML = [
+          {
+            title: aiModuleIntro,
+            body: "Citizen-facing AI education is tailored to readiness so the pilot shows responsible adoption instead of black-box automation."
+          },
+          {
+            title: "Public servant AI operations lab",
+            body: `Counselors and labor secretariat teams learn how to review AI suggestions, manage escalations, and interpret evidence in the ${state} workflow.`
+          },
+          {
+            title: "Employer language alignment",
+            body: "Participating employers see skills in structured, human-readable terms so matching becomes more trusted and more explainable."
+          }
+        ]
+          .map(
+            (module) => `
+              <div class="module-item">
+                <strong>${module.title}</strong>
+                <span>${module.body}</span>
+              </div>
+            `
+          )
+          .join("");
+
+        renderStatePanel(state);
+      }
+
+      document.getElementById("scenarioForm").addEventListener("submit", renderScenario);
+
+      document.querySelectorAll(".mode-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const mode = button.dataset.mode;
+          document.querySelectorAll(".mode-button").forEach((item) => item.classList.toggle("active", item === button));
+          document.querySelectorAll(".architecture-stage").forEach((stage) => {
+            stage.classList.toggle("active", stage.id === `mode-${mode}`);
+          });
+        });
+      });
+
+      Object.keys(scenarioData).forEach((state) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `state-chip${state === activeState ? " active" : ""}`;
+        button.textContent = state;
+        button.dataset.state = state;
+        button.addEventListener("click", () => {
+          document.getElementById("stateSelect").value = state;
+          renderStatePanel(state);
+          renderScenario();
+        });
+        stateButtons.appendChild(button);
+      });
+
+      renderStatePanel(activeState);
+      renderScenario();
+    </script>
+  </body>
+</html>
